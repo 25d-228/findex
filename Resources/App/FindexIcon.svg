@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 340" width="340" height="340">
+<rect x="0" y="0" width="340" height="340" rx="16" ry="16" fill="#F5E6D8"/>
+
+  <path d="M 85 238 L 85 102 L 160 102 L 178 124 L 255 124 L 255 238 Z" fill="#3D3D3D"/>
+
+  <g transform="translate(190, 180)" shape-rendering="crispEdges">
+    <rect x="0"   y="0"  width="30" height="30" fill="#1A1A1A"/>
+    <rect x="90"  y="0"  width="30" height="30" fill="#1A1A1A"/>
+    <rect x="15"  y="15" width="15" height="15" fill="#F5A5B8"/>
+    <rect x="90"  y="15" width="15" height="15" fill="#F5A5B8"/>
+    <rect x="0"   y="30" width="120" height="30" fill="#1A1A1A"/>
+    <rect x="30"  y="45" width="15"  height="15" fill="#FFFFFF"/>
+    <rect x="75"  y="45" width="15"  height="15" fill="#FFFFFF"/>
+    <rect x="0"   y="60" width="120" height="30" fill="#FFFFFF"/>
+    <rect x="0"   y="60" width="15" height="15" fill="#1A1A1A"/>
+    <rect x="105" y="60" width="15" height="15" fill="#1A1A1A"/>
+    <rect x="30"  y="60" width="15" height="15" fill="#0A0A0A"/>
+    <rect x="75"  y="60" width="15" height="15" fill="#0A0A0A"/>
+    <rect x="30"  y="90" width="60" height="30" fill="#FFFFFF"/>
+    <rect x="15"  y="90" width="15" height="15" fill="#1A1A1A"/>
+    <rect x="90"  y="90" width="15" height="15" fill="#1A1A1A"/>
+    <rect x="52"  y="96" width="16" height="10" fill="#0A0A0A"/>
+  </g>
+</svg>

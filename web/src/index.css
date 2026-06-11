@@ -1,0 +1,245 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource/silkscreen/400.css";
+@import "@fontsource/silkscreen/700.css";
+@import "@fontsource-variable/schibsted-grotesk";
+@import "@fontsource/fragment-mono";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: var(--font-display);
+    --font-display: 'Silkscreen', monospace;
+    --font-sans: 'Schibsted Grotesk Variable', sans-serif;
+    --font-mono: 'Fragment Mono', monospace;
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: var(--radius);
+    --radius-md: var(--radius);
+    --radius-lg: var(--radius);
+    --radius-xl: var(--radius);
+    --radius-2xl: var(--radius);
+    --radius-3xl: var(--radius);
+    --radius-4xl: var(--radius);
+}
+
+:root {
+    /* Findex pixel-utility palette, derived from the app icon */
+    --paper: #faf3ea;
+    --cream: #f5e6d8;
+    --cream-deep: #e8d5c2;
+    --ink: #1a1a1a;
+    --folder: #3d3d3d;
+    --pink: #f5a5b8;
+    --pink-deep: #e8849d;
+
+    --background: var(--paper);
+    --foreground: var(--ink);
+    --card: var(--cream);
+    --card-foreground: var(--ink);
+    --popover: var(--cream);
+    --popover-foreground: var(--ink);
+    --primary: var(--ink);
+    --primary-foreground: var(--cream);
+    --secondary: var(--cream-deep);
+    --secondary-foreground: var(--ink);
+    --muted: #efe0cf;
+    --muted-foreground: #6b5e51;
+    --accent: var(--pink);
+    --accent-foreground: var(--ink);
+    --destructive: #c84b3c;
+    --border: var(--ink);
+    --input: var(--ink);
+    --ring: var(--pink-deep);
+    --chart-1: var(--ink);
+    --chart-2: var(--folder);
+    --chart-3: var(--pink);
+    --chart-4: var(--cream-deep);
+    --chart-5: var(--muted-foreground);
+    --radius: 0rem;
+    --sidebar: var(--cream);
+    --sidebar-foreground: var(--ink);
+    --sidebar-primary: var(--ink);
+    --sidebar-primary-foreground: var(--cream);
+    --sidebar-accent: var(--pink);
+    --sidebar-accent-foreground: var(--ink);
+    --sidebar-border: var(--ink);
+    --sidebar-ring: var(--pink-deep);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01";
+    background-image: radial-gradient(rgb(26 26 26 / 0.07) 1px, transparent 1px);
+    background-size: 18px 18px;
+    }
+  html {
+    @apply font-sans;
+    }
+  ::selection {
+    background: var(--pink);
+    color: var(--ink);
+    }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .pixel-shadow {
+    box-shadow: 5px 5px 0 0 var(--ink);
+  }
+  .pixel-shadow-sm {
+    box-shadow: 3px 3px 0 0 var(--ink);
+  }
+  .pixel-shadow-pink {
+    box-shadow: 5px 5px 0 0 var(--pink);
+  }
+}
+
+/* ---- pixel restyling of shadcn primitives ---- */
+
+[data-slot="input"] {
+  border-width: 2px;
+  background: #fffdf9;
+  transition: box-shadow 120ms steps(2), transform 120ms steps(2);
+}
+[data-slot="input"]:focus-visible {
+  box-shadow: 3px 3px 0 0 var(--pink);
+  border-color: var(--ink);
+}
+
+[data-slot="select-trigger"] {
+  border-width: 2px;
+  background: #fffdf9;
+}
+[data-slot="select-trigger"]:focus-visible {
+  box-shadow: 3px 3px 0 0 var(--pink);
+}
+[data-slot="select-content"] {
+  border-width: 2px;
+  box-shadow: 5px 5px 0 0 var(--ink);
+}
+
+.pixel-slider [data-slot="slider-track"] {
+  height: 14px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: #fffdf9;
+}
+.pixel-slider [data-slot="slider-range"] {
+  background: var(--pink);
+  border-radius: 0;
+}
+.pixel-slider [data-slot="slider-thumb"] {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--cream);
+  box-shadow: 2px 2px 0 0 var(--ink);
+  transition: none;
+}
+.pixel-slider [data-slot="slider-thumb"]:hover,
+.pixel-slider [data-slot="slider-thumb"]:focus-visible {
+  background: var(--pink);
+  outline: none;
+  ring: none;
+}
+
+[data-sonner-toast] {
+  border-radius: 0 !important;
+  border: 2px solid var(--ink) !important;
+  box-shadow: 5px 5px 0 0 var(--ink) !important;
+  background: var(--cream) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-sans) !important;
+}
+[data-sonner-toast] [data-title] {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ---- motion ---- */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.reveal {
+  animation: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes blink {
+  0%, 90%, 100% {
+    opacity: 1;
+  }
+  93%, 97% {
+    opacity: 0;
+  }
+}
+.creature-eye {
+  animation: blink 4.2s steps(1, end) infinite;
+}
+
+@keyframes drift {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.drift {
+  animation: drift 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .creature-eye,
+  .drift {
+    animation: none;
+  }
+}

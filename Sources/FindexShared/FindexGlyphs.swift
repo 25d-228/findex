@@ -39,18 +39,6 @@ enum FindexGlyphs {
         return item
     }
 
-    /// Text rule fallback for menus that cross XPC (Finder toolbar menu):
-    /// attributed text survives serialization where views are dropped.
-    static func textSeparatorItem() -> NSMenuItem {
-        let item = NSMenuItem(title: "", action: nil, keyEquivalent: "")
-        item.attributedTitle = NSAttributedString(string: String(repeating: "\u{2500}", count: 26), attributes: [
-            .font: NSFont.monospacedSystemFont(ofSize: 8, weight: .regular),
-            .foregroundColor: NSColor.tertiaryLabelColor
-        ])
-        item.isEnabled = false
-        return item
-    }
-
     private final class MenuRuleView: NSView {
         override var intrinsicContentSize: NSSize {
             NSSize(width: NSView.noIntrinsicMetric, height: 7)

@@ -37,15 +37,12 @@ final class FinderSyncExtension: FIFinderSync {
             header.image = FindexGlyphs.creatureIcon()
             header.isEnabled = false
             menu.addItem(header)
-            menu.addItem(styled ? FindexGlyphs.textSeparatorItem() : .separator())
         }
 
         addItem("Copy File Path", action: #selector(copyFilePath), icon: styled ? FindexGlyphs.fileIcon() : nil, styled: styled, to: menu)
         addItem("Copy Folder Path", action: #selector(copyFolderPath), icon: styled ? FindexGlyphs.folderIcon() : nil, styled: styled, to: menu)
-        menu.addItem(styled ? FindexGlyphs.textSeparatorItem() : .separator())
         addItem("Open Terminal Here", action: #selector(openTerminal), icon: styled ? FindexGlyphs.terminalIcon() : nil, styled: styled, to: menu)
         addItem("Open in Editor", action: #selector(openEditor), icon: styled ? FindexGlyphs.pencilIcon() : nil, styled: styled, to: menu)
-        menu.addItem(styled ? FindexGlyphs.textSeparatorItem() : .separator())
         addItem("Apply View Preset", action: #selector(applyViewPreset), icon: styled ? FindexGlyphs.gridIcon() : nil, styled: styled, to: menu)
 
         return menu

@@ -118,7 +118,7 @@ final class CommandRunner {
         let folderURL = URL(fileURLWithPath: folderPath, isDirectory: true)
         guard let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) else {
             NSLog("Findex could not find app with bundle identifier \(bundleIdentifier)")
-            NSSound.beep()
+            presentMissingApp(bundleIdentifier: bundleIdentifier)
             return
         }
 
@@ -128,6 +128,17 @@ final class CommandRunner {
                 NSLog("Findex failed to open \(folderPath) with \(bundleIdentifier): \(error.localizedDescription)")
                 NSSound.beep()
             }
+        }
+    }
+
+    private func presentMissingApp(bundleIdentifier: String) {
+        DispatchQueue.main.async {
+            let alert = NSAlert()
+            alert.messageText = "App not installed"
+            alert.informativeText = "No app with bundle ID “\(bundleIdentifier)” was found. Pick a different one in Findex Preferences."
+            alert.addButton(withTitle: "OK")
+            NSApp.activate(ignoringOtherApps: true)
+            alert.runModal()
         }
     }
 

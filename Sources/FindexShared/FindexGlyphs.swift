@@ -5,9 +5,9 @@ import AppKit
 /// with the menu bar / toolbar appearance; the creature is full color.
 enum FindexGlyphs {
     static func menuTitle(_ title: String, weight: NSFont.Weight = .medium) -> NSAttributedString {
-        NSAttributedString(string: title.uppercased(), attributes: [
-            .font: NSFont.monospacedSystemFont(ofSize: 11.5, weight: weight),
-            .kern: 0.8
+        NSAttributedString(string: title, attributes: [
+            .font: NSFont.monospacedSystemFont(ofSize: 12, weight: weight),
+            .kern: 0.4
         ])
     }
 

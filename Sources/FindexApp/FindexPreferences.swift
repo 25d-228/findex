@@ -91,6 +91,27 @@ enum FinderViewStyle: String, CaseIterable {
             return "flow view"
         }
     }
+
+    /// Finder's FXPreferredViewStyle code for the global default view.
+    var finderPreferredViewStyleCode: String {
+        switch self {
+        case .icon:
+            return "icnv"
+        case .list:
+            return "Nlsv"
+        case .column:
+            return "clmv"
+        case .gallery:
+            return "glyv"
+        }
+    }
+
+    /// Makes this the default view for folders Finder has no memory of.
+    /// Takes effect for newly opened windows without restarting Finder.
+    func applyAsFinderGlobalDefault() {
+        UserDefaults(suiteName: "com.apple.finder")?
+            .set(finderPreferredViewStyleCode, forKey: "FXPreferredViewStyle")
+    }
 }
 
 enum FinderArrangement: String, CaseIterable {

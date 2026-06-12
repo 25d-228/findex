@@ -102,6 +102,7 @@ final class WebPreferencesWindowController: NSWindowController, WKScriptMessageH
         if let rawView = body["view"] as? String,
            let viewStyle = FinderViewStyle(rawValue: rawView) {
             FindexPreferences.viewStyle = viewStyle
+            viewStyle.applyAsFinderGlobalDefault()
         }
 
         NSLog("Findex saved preferences from web UI")

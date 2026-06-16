@@ -1,7 +1,6 @@
 import { useMemo } from "react"
 
-export type Arrangement = "name" | "kind" | "modificationDate" | "none"
-export type ViewStyle = "icon" | "list" | "column" | "gallery"
+import type { Arrangement, ViewStyle } from "@/lib/preferences"
 
 type Item = {
   name: string

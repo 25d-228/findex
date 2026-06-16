@@ -1,7 +1,6 @@
-import { useEffect, useState, type ReactNode } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -18,168 +17,26 @@ import { Slider } from "@/components/ui/slider"
 import { Toaster } from "@/components/ui/sonner"
 
 import { Creature } from "@/components/findex/Creature"
-import { FinderPreview, type Arrangement, type ViewStyle } from "@/components/findex/FinderPreview"
-
-const ARRANGEMENTS: { value: Arrangement; label: string }[] = [
-  { value: "name", label: "Name" },
-  { value: "kind", label: "Kind" },
-  { value: "modificationDate", label: "Modification date" },
-  { value: "none", label: "None" },
-]
-
-const TERMINAL_PRESETS = [
-  { label: "kitty", id: "net.kovidgoyal.kitty" },
-  { label: "iTerm2", id: "com.googlecode.iterm2" },
-]
-
-const EDITOR_PRESETS = [
-  // "nvim" is not a bundle ID: the app launches nvim inside the terminal.
-  { label: "Neovim", id: "nvim" },
-  { label: "Zed", id: "dev.zed.Zed" },
-]
-
-const VIEWS: { value: ViewStyle; label: string; glyph: ReactNode }[] = [
-  {
-    value: "icon",
-    label: "Grid",
-    glyph: (
-      <svg width="16" height="16" viewBox="0 0 16 16" shapeRendering="crispEdges" aria-hidden="true">
-        <rect x="2.5" y="2.5" width="4.5" height="4.5" fill="currentColor" />
-        <rect x="9" y="2.5" width="4.5" height="4.5" fill="currentColor" />
-        <rect x="2.5" y="9" width="4.5" height="4.5" fill="currentColor" />
-        <rect x="9" y="9" width="4.5" height="4.5" fill="currentColor" />
-      </svg>
-    ),
-  },
-  {
-    value: "list",
-    label: "List",
-    glyph: (
-      <svg width="16" height="16" viewBox="0 0 16 16" shapeRendering="crispEdges" aria-hidden="true">
-        <rect x="2.5" y="3" width="2" height="2" fill="currentColor" />
-        <rect x="6" y="3" width="7.5" height="2" fill="currentColor" />
-        <rect x="2.5" y="7" width="2" height="2" fill="currentColor" />
-        <rect x="6" y="7" width="7.5" height="2" fill="currentColor" />
-        <rect x="2.5" y="11" width="2" height="2" fill="currentColor" />
-        <rect x="6" y="11" width="7.5" height="2" fill="currentColor" />
-      </svg>
-    ),
-  },
-  {
-    value: "column",
-    label: "Columns",
-    glyph: (
-      <svg width="16" height="16" viewBox="0 0 16 16" shapeRendering="crispEdges" aria-hidden="true">
-        <rect x="2" y="3" width="3.2" height="10" fill="currentColor" />
-        <rect x="6.4" y="3" width="3.2" height="10" fill="currentColor" />
-        <rect x="10.8" y="3" width="3.2" height="10" fill="currentColor" />
-      </svg>
-    ),
-  },
-  {
-    value: "gallery",
-    label: "Gallery",
-    glyph: (
-      <svg width="16" height="16" viewBox="0 0 16 16" shapeRendering="crispEdges" aria-hidden="true">
-        <rect x="3" y="2.5" width="10" height="7" fill="currentColor" />
-        <rect x="3" y="11.5" width="2.5" height="2.5" fill="currentColor" />
-        <rect x="6.75" y="11.5" width="2.5" height="2.5" fill="currentColor" />
-        <rect x="10.5" y="11.5" width="2.5" height="2.5" fill="currentColor" />
-      </svg>
-    ),
-  },
-]
-
-const DEFAULTS = {
-  terminal: "net.kovidgoyal.kitty",
-  editor: "nvim",
-  iconSize: 64,
-  arrangement: "name" as Arrangement,
-  view: "icon" as ViewStyle,
-}
-
-const STORAGE_KEY = "findex-preferences"
-
-type Prefs = typeof DEFAULTS
-
-declare global {
-  interface Window {
-    __FINDEX_PREFS__?: Partial<Prefs>
-    webkit?: {
-      messageHandlers?: {
-        findex?: { postMessage: (message: unknown) => void }
-      }
-    }
-  }
-}
-
-// When embedded in Findex.app, a WKScriptMessageHandler named "findex" is the
-// real persistence layer (UserDefaults). In a plain browser, localStorage is.
-const bridge = window.webkit?.messageHandlers?.findex
-const embedded = Boolean(bridge)
-
-function loadPreferences(): Prefs {
-  if (window.__FINDEX_PREFS__) {
-    return { ...DEFAULTS, ...window.__FINDEX_PREFS__ }
-  }
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return DEFAULTS
-    return { ...DEFAULTS, ...JSON.parse(raw) }
-  } catch {
-    return DEFAULTS
-  }
-}
-
-function persistPreferences(prefs: Prefs) {
-  if (bridge) {
-    bridge.postMessage({ type: "save", ...prefs })
-    window.__FINDEX_PREFS__ = prefs
-  } else {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs))
-  }
-}
-
-function PresetChips({
-  presets,
-  current,
-  onPick,
-}: {
-  presets: { label: string; id: string }[]
-  current: string
-  onPick: (id: string) => void
-}) {
-  return (
-    <div className="flex flex-wrap gap-1.5">
-      {presets.map((preset) => {
-        const active = preset.id === current
-        return (
-          <button key={preset.id} type="button" onClick={() => onPick(preset.id)} className="group">
-            <Badge
-              variant={active ? "default" : "outline"}
-              className={
-                "rounded-none border-2 border-foreground font-display text-[9px] tracking-wider uppercase transition-none " +
-                (active
-                  ? "bg-foreground text-card"
-                  : "bg-transparent text-foreground group-hover:bg-accent")
-              }
-            >
-              {preset.label}
-            </Badge>
-          </button>
-        )
-      })}
-    </div>
-  )
-}
+import { FinderPreview } from "@/components/findex/FinderPreview"
+import { PresetChips } from "@/components/findex/PresetChips"
+import { ARRANGEMENTS, EDITOR_PRESETS, TERMINAL_PRESETS, VIEWS } from "@/components/findex/options"
+import {
+  DEFAULTS,
+  ICON_SIZE,
+  isEmbedded,
+  loadPreferences,
+  persistPreferences,
+  type Arrangement,
+  type ViewStyle,
+} from "@/lib/preferences"
 
 export default function App() {
-  const [prefs] = useState(loadPreferences)
-  const [terminal, setTerminal] = useState(prefs.terminal)
-  const [editor, setEditor] = useState(prefs.editor)
-  const [iconSize, setIconSize] = useState(prefs.iconSize)
-  const [arrangement, setArrangement] = useState<Arrangement>(prefs.arrangement)
-  const [view, setView] = useState<ViewStyle>(prefs.view)
+  const [initialPreferences] = useState(loadPreferences)
+  const [terminal, setTerminal] = useState(initialPreferences.terminal)
+  const [editor, setEditor] = useState(initialPreferences.editor)
+  const [iconSize, setIconSize] = useState(initialPreferences.iconSize)
+  const [arrangement, setArrangement] = useState<Arrangement>(initialPreferences.arrangement)
+  const [view, setView] = useState<ViewStyle>(initialPreferences.view)
   const [dirty, setDirty] = useState(false)
 
   useEffect(() => {
@@ -189,13 +46,13 @@ export default function App() {
   }, [terminal, editor, iconSize, arrangement, view])
 
   const save = () => {
-    const clamped = Math.min(Math.max(iconSize, 16), 256)
-    setIconSize(clamped)
-    persistPreferences({ terminal: terminal.trim(), editor: editor.trim(), iconSize: clamped, arrangement, view })
+    const clampedIconSize = Math.min(Math.max(iconSize, ICON_SIZE.min), ICON_SIZE.max)
+    setIconSize(clampedIconSize)
+    persistPreferences({ terminal: terminal.trim(), editor: editor.trim(), iconSize: clampedIconSize, arrangement, view })
     setDirty(false)
-    const viewLabel = VIEWS.find((v) => v.value === view)?.label ?? view
+    const viewLabel = VIEWS.find((option) => option.value === view)?.label ?? view
     toast.success("Preferences saved", {
-      description: `${viewLabel} view · icon size ${clamped}px`,
+      description: `${viewLabel} view · icon size ${clampedIconSize}px`,
     })
   }
 
@@ -256,15 +113,15 @@ export default function App() {
       <div className="reveal flex flex-col gap-2.5" style={{ animationDelay: "220ms" }}>
         <Label className="font-display text-[10px] tracking-widest uppercase">Default view</Label>
         <div className="flex gap-2" role="radiogroup" aria-label="Default view">
-          {VIEWS.map((v) => {
-            const active = v.value === view
+          {VIEWS.map((viewOption) => {
+            const active = viewOption.value === view
             return (
               <button
-                key={v.value}
+                key={viewOption.value}
                 type="button"
                 role="radio"
                 aria-checked={active}
-                onClick={() => setView(v.value)}
+                onClick={() => setView(viewOption.value)}
                 className={
                   "flex w-20 flex-col items-center gap-1 border-2 border-foreground py-2.5 font-display text-[9px] tracking-wider uppercase transition-none " +
                   (active
@@ -272,8 +129,8 @@ export default function App() {
                     : "bg-transparent text-foreground hover:bg-accent")
                 }
               >
-                {v.glyph}
-                {v.label}
+                {viewOption.glyph}
+                {viewOption.label}
               </button>
             )
           })}
@@ -295,17 +152,17 @@ export default function App() {
         <Slider
           id="icon-size"
           className="pixel-slider"
-          min={16}
-          max={256}
+          min={ICON_SIZE.min}
+          max={ICON_SIZE.max}
           step={2}
           value={[iconSize]}
-          onValueChange={([v]) => setIconSize(v)}
+          onValueChange={([value]) => setIconSize(value)}
           disabled={!iconOnly}
           aria-label="Icon size"
         />
         <div className="flex justify-between font-mono text-[10px] text-muted-foreground">
-          <span>16</span>
-          <span>256</span>
+          <span>{ICON_SIZE.min}</span>
+          <span>{ICON_SIZE.max}</span>
         </div>
       </div>
 
@@ -321,9 +178,9 @@ export default function App() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="rounded-none">
-            {ARRANGEMENTS.map((a) => (
-              <SelectItem key={a.value} value={a.value} className="rounded-none">
-                {a.label}
+            {ARRANGEMENTS.map((arrangementOption) => (
+              <SelectItem key={arrangementOption.value} value={arrangementOption.value} className="rounded-none">
+                {arrangementOption.label}
               </SelectItem>
             ))}
           </SelectContent>
@@ -366,7 +223,7 @@ export default function App() {
     </Button>
   )
 
-  if (embedded) {
+  if (isEmbedded) {
     // Inside Findex.app the native window provides the chrome; render the
     // content directly on the paper background.
     return (

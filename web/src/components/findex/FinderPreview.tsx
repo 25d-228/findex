@@ -30,7 +30,7 @@ const KIND_ORDER: Record<Item["kind"], number> = {
 }
 
 // The miniature shrinks the real icon-size range into this px range.
-const PREVIEW_ICON_PX = { min: 14, max: 58 }
+const PREVIEW_ICON_PX = { min: 14, max: 58 } as const
 
 function FolderGlyph({ px }: { px: number }) {
   return (

@@ -22,38 +22,44 @@ final class FindexApp: NSObject, NSApplicationDelegate {
     private func installMainMenu() {
         let mainMenu = NSMenu()
 
-        let appItem = NSMenuItem()
-        let appMenu = NSMenu()
-        appMenu.addItem(withTitle: "Quit Findex", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
-        appItem.submenu = appMenu
-        mainMenu.addItem(appItem)
+        // AppKit shows the first submenu under the app name, ignoring its title.
+        mainMenu.addItem(submenuItem(title: "") { menu in
+            menu.addItem(withTitle: "Quit Findex", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        })
 
-        let fileItem = NSMenuItem()
-        let fileMenu = NSMenu(title: "File")
-        fileMenu.addItem(withTitle: "Close Window", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
-        fileItem.submenu = fileMenu
-        mainMenu.addItem(fileItem)
+        mainMenu.addItem(submenuItem(title: "File") { menu in
+            menu.addItem(withTitle: "Close Window", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+        })
 
-        let editItem = NSMenuItem()
-        let editMenu = NSMenu(title: "Edit")
-        editMenu.addItem(withTitle: "Undo", action: Selector(("undo:")), keyEquivalent: "z")
-        editMenu.addItem(withTitle: "Redo", action: Selector(("redo:")), keyEquivalent: "Z")
-        editMenu.addItem(.separator())
-        editMenu.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
-        editMenu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
-        editMenu.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
-        editMenu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
-        editItem.submenu = editMenu
-        mainMenu.addItem(editItem)
+        mainMenu.addItem(submenuItem(title: "Edit") { menu in
+            menu.addItem(withTitle: "Undo", action: Selector(("undo:")), keyEquivalent: "z")
+            menu.addItem(withTitle: "Redo", action: Selector(("redo:")), keyEquivalent: "Z")
+            menu.addItem(.separator())
+            menu.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+            menu.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+            menu.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+            menu.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        })
 
-        let windowItem = NSMenuItem()
+        // Window needs its menu kept around for NSApp.windowsMenu, so it is
+        // built inline rather than through the helper.
         let windowMenu = NSMenu(title: "Window")
         windowMenu.addItem(withTitle: "Minimize", action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
+        let windowItem = NSMenuItem()
         windowItem.submenu = windowMenu
         mainMenu.addItem(windowItem)
         NSApp.windowsMenu = windowMenu
 
         NSApp.mainMenu = mainMenu
+    }
+
+    /// Wraps a populated submenu in the top-level NSMenuItem that hosts it.
+    private func submenuItem(title: String, build: (NSMenu) -> Void) -> NSMenuItem {
+        let submenu = NSMenu(title: title)
+        build(submenu)
+        let item = NSMenuItem()
+        item.submenu = submenu
+        return item
     }
 
     private func installURLHandler() {

@@ -108,21 +108,13 @@ final class FinderSyncExtension: FIFinderSync {
     private func currentFolderURL() -> URL? {
         let controller = FIFinderSyncController.default()
         if let targetedURL = controller.targetedURL() {
-            return folderURL(for: targetedURL)
+            return targetedURL.folderURL
         }
 
         if let selectedURL = controller.selectedItemURLs()?.first {
-            return folderURL(for: selectedURL)
+            return selectedURL.folderURL
         }
 
         return nil
-    }
-
-    private func folderURL(for url: URL) -> URL {
-        var isDirectory = ObjCBool(false)
-        if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue {
-            return url
-        }
-        return url.deletingLastPathComponent()
     }
 }

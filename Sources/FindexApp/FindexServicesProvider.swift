@@ -60,9 +60,8 @@ final class FindexServicesProvider: NSObject {
             return
         }
 
-        let folderPath = folderPath(for: fileURLs.first)
         let context = FinderContext(
-            folderPath: folderPath,
+            folderPath: fileURLs.first?.folderURL.path,
             filePaths: fileURLs.map(\.path)
         )
         commandRunner.run(command: command, context: context)
@@ -110,18 +109,5 @@ final class FindexServicesProvider: NSObject {
         }
 
         return nil
-    }
-
-    private func folderPath(for url: URL?) -> String? {
-        guard let url else {
-            return nil
-        }
-
-        var isDirectory = ObjCBool(false)
-        if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue {
-            return url.path
-        }
-
-        return url.deletingLastPathComponent().path
     }
 }

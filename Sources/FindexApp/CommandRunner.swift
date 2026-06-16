@@ -50,15 +50,7 @@ final class CommandRunner {
 
         return request.filePaths
             .map { URL(fileURLWithPath: $0) }
-            .map { folderURL(for: $0).path }
-    }
-
-    private func folderURL(for url: URL) -> URL {
-        var isDirectory = ObjCBool(false)
-        if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue {
-            return url
-        }
-        return url.deletingLastPathComponent()
+            .map { $0.folderURL.path }
     }
 
     private func copy(_ paths: [String]) {

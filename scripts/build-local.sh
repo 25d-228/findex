@@ -54,6 +54,7 @@ swiftc \
   -framework WebKit \
   "$ROOT/Sources/FindexShared/FindexCommand.swift" \
   "$ROOT/Sources/FindexShared/FindexGlyphs.swift" \
+  "$ROOT/Sources/FindexShared/URL+FolderURL.swift" \
   "$ROOT/Sources/FindexApp/main.swift" \
   "$ROOT/Sources/FindexApp/FindexApp.swift" \
   "$ROOT/Sources/FindexApp/FinderContextReader.swift" \
@@ -76,6 +77,7 @@ swiftc \
   "$DERIVED/FinderExtensionMain.o" \
   "$ROOT/Sources/FindexShared/FindexCommand.swift" \
   "$ROOT/Sources/FindexShared/FindexGlyphs.swift" \
+  "$ROOT/Sources/FindexShared/URL+FolderURL.swift" \
   "$ROOT/Sources/FindexFinderExtension/FinderSyncExtension.swift" \
   -o "$EXT_MACOS/FindexFinderExtension"
 

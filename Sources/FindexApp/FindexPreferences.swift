@@ -9,9 +9,21 @@ enum FindexPreferences {
         static let viewStyle = "viewStyle"
     }
 
+    private enum Default {
+        static let terminalBundleIdentifier = "com.apple.Terminal"
+        static let editorBundleIdentifier = "com.microsoft.VSCode"
+        static let iconSize = 64
+    }
+
+    /// Finder icon-view sizes Findex is willing to apply, in points.
+    private enum IconSizePoints {
+        static let minimum = 16
+        static let maximum = 256
+    }
+
     static var terminalBundleIdentifier: String {
         get {
-            UserDefaults.standard.string(forKey: Key.terminalBundleIdentifier) ?? "com.apple.Terminal"
+            UserDefaults.standard.string(forKey: Key.terminalBundleIdentifier) ?? Default.terminalBundleIdentifier
         }
         set {
             UserDefaults.standard.set(newValue, forKey: Key.terminalBundleIdentifier)
@@ -29,11 +41,14 @@ enum FindexPreferences {
 
     static var iconSize: Int {
         get {
+            // integer(forKey:) returns 0 when unset; iconSize is never stored
+            // below the minimum, so 0 unambiguously means "use the default".
             let saved = UserDefaults.standard.integer(forKey: Key.iconSize)
-            return saved == 0 ? 64 : min(max(saved, 16), 256)
+            guard saved != 0 else { return Default.iconSize }
+            return min(max(saved, IconSizePoints.minimum), IconSizePoints.maximum)
         }
         set {
-            UserDefaults.standard.set(min(max(newValue, 16), 256), forKey: Key.iconSize)
+            UserDefaults.standard.set(min(max(newValue, IconSizePoints.minimum), IconSizePoints.maximum), forKey: Key.iconSize)
         }
     }
 
@@ -59,16 +74,16 @@ enum FindexPreferences {
 
     private static func detectedEditorBundleIdentifier() -> String {
         let candidates = [
-            "com.todesktop.230313mzl4w4u92",
-            "com.microsoft.VSCode",
-            "com.apple.dt.Xcode"
+            "com.todesktop.230313mzl4w4u92", // Cursor
+            "com.microsoft.VSCode",          // Visual Studio Code
+            "com.apple.dt.Xcode"             // Xcode
         ]
 
         for candidate in candidates where AppLocator.hasApplication(bundleIdentifier: candidate) {
             return candidate
         }
 
-        return "com.microsoft.VSCode"
+        return Default.editorBundleIdentifier
     }
 }
 

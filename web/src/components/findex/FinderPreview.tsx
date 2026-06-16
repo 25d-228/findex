@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import type { Arrangement, ViewStyle } from "@/lib/preferences"
+import { ICON_SIZE, type Arrangement, type ViewStyle } from "@/lib/preferences"
 
 type Item = {
   name: string
@@ -28,6 +28,9 @@ const KIND_ORDER: Record<Item["kind"], number> = {
   audio: 3,
   text: 4,
 }
+
+// The miniature shrinks the real icon-size range into this px range.
+const PREVIEW_ICON_PX = { min: 14, max: 58 }
 
 function FolderGlyph({ px }: { px: number }) {
   return (
@@ -199,8 +202,9 @@ export function FinderPreview({
   arrangement: Arrangement
   view: ViewStyle
 }) {
-  // Map the real 16–256 pt range onto a 14–58 px miniature.
-  const px = Math.round(14 + ((iconSize - 16) / 240) * 44)
+  // Map the real icon-size range onto the miniature's px range.
+  const sizeFraction = (iconSize - ICON_SIZE.min) / (ICON_SIZE.max - ICON_SIZE.min)
+  const px = Math.round(PREVIEW_ICON_PX.min + sizeFraction * (PREVIEW_ICON_PX.max - PREVIEW_ICON_PX.min))
   const items = useMemo(() => sortItems(arrangement), [arrangement])
 
   return (
@@ -235,7 +239,7 @@ export function FinderPreview({
       </div>
 
       <div className="flex items-center justify-between border-t-2 border-foreground bg-secondary px-3 py-1.5">
-        <span className="font-display text-[9px] tracking-widest uppercase">8 items</span>
+        <span className="font-display text-[9px] tracking-widest uppercase">{ITEMS.length} items</span>
         <span className="font-mono text-[9px] text-muted-foreground">
           {view === "icon" ? `icon ${iconSize}px` : `${view} view`}
         </span>

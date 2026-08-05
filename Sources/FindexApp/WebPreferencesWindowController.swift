@@ -2,16 +2,15 @@ import AppKit
 import WebKit
 
 /// Preferences window backed by the bundled shadcn/ui web app
-/// (Resources/WebPreferences). Falls back to the native window when the
-/// web assets are missing from the bundle.
+/// (Resources/WebPreferences).
 final class WebPreferencesWindowController: NSWindowController, WKScriptMessageHandler {
-    static var bundledPageURL: URL? {
+    private static var bundledPageURL: URL? {
         Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "WebPreferences")
     }
 
-    static func makeIfAvailable() -> WebPreferencesWindowController? {
+    static func make() -> WebPreferencesWindowController {
         guard let pageURL = bundledPageURL else {
-            return nil
+            preconditionFailure("Bundled web preferences are missing")
         }
         return WebPreferencesWindowController(pageURL: pageURL)
     }

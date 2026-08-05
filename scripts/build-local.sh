@@ -64,6 +64,7 @@ swiftc \
   "$ROOT/Sources/FindexApp/CommandRunner.swift" \
   "$ROOT/Sources/FindexApp/FindexPreferences.swift" \
   "$ROOT/Sources/FindexApp/FinderViewPresetScript.swift" \
+  "$ROOT/Sources/FindexApp/WeakScriptMessageHandler.swift" \
   "$ROOT/Sources/FindexApp/WebPreferencesWindowController.swift" \
   -o "$APP_MACOS/Findex"
 

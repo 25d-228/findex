@@ -174,6 +174,9 @@ final class FindexApp: NSObject, NSApplicationDelegate {
     @objc private func preferencesWindowWillClose(_ notification: Notification) {
         if let window = notification.object as? NSWindow {
             NotificationCenter.default.removeObserver(self, name: NSWindow.willCloseNotification, object: window)
+            if preferencesWindowController?.window === window {
+                preferencesWindowController = nil
+            }
         }
         NSApp.setActivationPolicy(.accessory)
     }

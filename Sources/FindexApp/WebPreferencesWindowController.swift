@@ -42,7 +42,7 @@ final class WebPreferencesWindowController: NSWindowController, WKScriptMessageH
         window.contentView = webView
 
         super.init(window: window)
-        contentController.add(self, name: "findex")
+        contentController.add(WeakScriptMessageHandler(delegate: self), name: "findex")
     }
 
     required init?(coder: NSCoder) {

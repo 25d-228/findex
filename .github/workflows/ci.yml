@@ -48,5 +48,17 @@ jobs:
             -o "$RUNNER_TEMP/FinderViewPresetScriptTests"
           "$RUNNER_TEMP/FinderViewPresetScriptTests"
 
+      - name: Test web preferences bridge ownership
+        run: |
+          swiftc \
+            -swift-version 5 \
+            -target "$(uname -m)-apple-macosx13.0" \
+            -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+            -framework WebKit \
+            Sources/FindexApp/WeakScriptMessageHandler.swift \
+            Tests/WeakScriptMessageHandlerTests.swift \
+            -o "$RUNNER_TEMP/WeakScriptMessageHandlerTests"
+          "$RUNNER_TEMP/WeakScriptMessageHandlerTests"
+
       - name: Build macOS application
         run: scripts/build-local.sh

@@ -35,5 +35,18 @@ jobs:
         working-directory: web
         run: npm run build
 
+      - name: Test Finder view-preset script generation
+        run: |
+          swiftc \
+            -swift-version 5 \
+            -target "$(uname -m)-apple-macosx13.0" \
+            -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+            -framework AppKit \
+            Sources/FindexApp/FindexPreferences.swift \
+            Sources/FindexApp/FinderViewPresetScript.swift \
+            Tests/FinderViewPresetScriptTests.swift \
+            -o "$RUNNER_TEMP/FinderViewPresetScriptTests"
+          "$RUNNER_TEMP/FinderViewPresetScriptTests"
+
       - name: Build macOS application
         run: scripts/build-local.sh

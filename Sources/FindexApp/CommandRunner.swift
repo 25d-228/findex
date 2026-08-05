@@ -140,7 +140,15 @@ final class CommandRunner {
             return
         }
 
-        let script = FinderViewPresetScript.make(folderPath: folderPath)
+        let viewStyle = FindexPreferences.viewStyle
+        let iconSize = FindexPreferences.iconSize
+        let arrangement = FindexPreferences.arrangement
+        let script = FinderViewPresetScript.make(
+            folderPath: folderPath,
+            viewStyle: viewStyle,
+            iconSize: iconSize,
+            arrangement: arrangement
+        )
         var error: NSDictionary?
         NSAppleScript(source: script)?.executeAndReturnError(&error)
         if let error {

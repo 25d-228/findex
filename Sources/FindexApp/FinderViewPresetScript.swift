@@ -1,11 +1,13 @@
 import Foundation
 
 enum FinderViewPresetScript {
-    static func make(folderPath: String) -> String {
+    static func make(
+        folderPath: String,
+        viewStyle: FinderViewStyle,
+        iconSize: Int,
+        arrangement: FinderArrangement
+    ) -> String {
         let path = appleScriptString(folderPath)
-        let viewStyle = FindexPreferences.viewStyle
-        let iconSize = FindexPreferences.iconSize
-        let arrangement = FindexPreferences.arrangement.appleScriptTerm
 
         // Icon size and arrangement are icon-view options; other views just
         // switch the view style.
@@ -13,7 +15,7 @@ enum FinderViewPresetScript {
 
             tell icon view options of finderWindow
                 set icon size to \(iconSize)
-                set arrangement to \(arrangement)
+                set arrangement to \(arrangement.appleScriptTerm)
             end tell
         """ : ""
 

@@ -6,8 +6,7 @@ final class FindexApp: NSObject, NSApplicationDelegate {
 
     private let commandRunner = CommandRunner()
     private lazy var servicesProvider = FindexServicesProvider(commandRunner: commandRunner)
-    private var preferencesWindowController: PreferencesWindowController?
-    private var webPreferencesWindowController: WebPreferencesWindowController?
+    private var preferencesWindowController: WebPreferencesWindowController?
     private var statusItem: NSStatusItem?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -147,18 +146,14 @@ final class FindexApp: NSObject, NSApplicationDelegate {
     }
 
     @objc private func showPreferences() {
-        let controller: NSWindowController
-        if let existing = webPreferencesWindowController, existing.window?.isVisible == true {
+        let controller: WebPreferencesWindowController
+        if let existing = preferencesWindowController, existing.window?.isVisible == true {
             controller = existing
-        } else if let webController = WebPreferencesWindowController.makeIfAvailable() {
-            // Recreated per open so the page always reflects current defaults.
-            webPreferencesWindowController = webController
-            controller = webController
         } else {
-            if preferencesWindowController == nil {
-                preferencesWindowController = PreferencesWindowController()
-            }
-            controller = preferencesWindowController!
+            // Recreated per open so the page always reflects current defaults.
+            let webController = WebPreferencesWindowController.make()
+            preferencesWindowController = webController
+            controller = webController
         }
 
         // Become a regular app while a window is visible so window managers

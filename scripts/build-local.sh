@@ -2,6 +2,13 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+WEB_DIST="$ROOT/web/dist"
+
+if [ ! -d "$WEB_DIST" ]; then
+  echo "error: web/dist is required; run 'npm ci && npm run build' in web/ before building Findex" >&2
+  exit 1
+fi
+
 BUILD_DIR="$ROOT/build"
 APP_DIR="$BUILD_DIR/Findex.app"
 APP_CONTENTS="$APP_DIR/Contents"
@@ -30,12 +37,7 @@ cp "$ROOT/Resources/FinderExtension/Info.plist" "$EXT_CONTENTS/Info.plist"
 cp "$ROOT/Resources/App/FindexIcon.icns" "$APP_RESOURCES/FindexIcon.icns"
 cp "$ROOT/Resources/App/FindexIcon.icns" "$EXT_RESOURCES/FindexIcon.icns"
 
-# Bundle the web preferences UI when it has been built (web/dist).
-if [ -d "$ROOT/web/dist" ]; then
-  cp -R "$ROOT/web/dist" "$APP_RESOURCES/WebPreferences"
-else
-  echo "note: web/dist not found; Preferences falls back to the native window (run 'npm run build' in web/)" >&2
-fi
+cp -R "$WEB_DIST" "$APP_RESOURCES/WebPreferences"
 
 clang \
   -target "$TARGET" \
@@ -62,7 +64,6 @@ swiftc \
   "$ROOT/Sources/FindexApp/CommandRunner.swift" \
   "$ROOT/Sources/FindexApp/FindexPreferences.swift" \
   "$ROOT/Sources/FindexApp/FinderViewPresetScript.swift" \
-  "$ROOT/Sources/FindexApp/PreferencesWindowController.swift" \
   "$ROOT/Sources/FindexApp/WebPreferencesWindowController.swift" \
   -o "$APP_MACOS/Findex"
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -37,19 +37,14 @@ export default function App() {
   const [iconSize, setIconSize] = useState(initialPreferences.iconSize)
   const [arrangement, setArrangement] = useState<Arrangement>(initialPreferences.arrangement)
   const [view, setView] = useState<ViewStyle>(initialPreferences.view)
-  const [dirty, setDirty] = useState(false)
-
-  useEffect(() => {
-    const saved = JSON.stringify(loadPreferences())
-    const now = JSON.stringify({ terminal, editor, iconSize, arrangement, view })
-    setDirty(saved !== now)
-  }, [terminal, editor, iconSize, arrangement, view])
+  const [savedPreferences, setSavedPreferences] = useState(initialPreferences)
+  const dirty = JSON.stringify(savedPreferences) !== JSON.stringify({ terminal, editor, iconSize, arrangement, view })
 
   const save = () => {
     const clampedIconSize = Math.min(Math.max(iconSize, ICON_SIZE.min), ICON_SIZE.max)
     setIconSize(clampedIconSize)
     persistPreferences({ terminal: terminal.trim(), editor: editor.trim(), iconSize: clampedIconSize, arrangement, view })
-    setDirty(false)
+    setSavedPreferences({ terminal, editor, iconSize: clampedIconSize, arrangement, view })
     const viewLabel = VIEWS.find((option) => option.value === view)?.label ?? view
     toast.success("Preferences saved", {
       description: `${viewLabel} view · icon size ${clampedIconSize}px`,

@@ -27,6 +27,20 @@ jobs:
         working-directory: web
         run: npm ci
 
+      - name: Test web preference save validation
+        working-directory: web
+        run: |
+          ./node_modules/.bin/tsc \
+            --ignoreConfig \
+            --target es2023 \
+            --module commonjs \
+            --rootDir . \
+            --outDir "$RUNNER_TEMP/PreferenceSaveTests" \
+            --skipLibCheck \
+            src/lib/preferenceSave.ts \
+            tests/PreferenceSaveTests.ts
+          node "$RUNNER_TEMP/PreferenceSaveTests/tests/PreferenceSaveTests.js"
+
       - name: Lint web application
         working-directory: web
         run: npm run lint
@@ -59,6 +73,19 @@ jobs:
             Tests/WeakScriptMessageHandlerTests.swift \
             -o "$RUNNER_TEMP/WeakScriptMessageHandlerTests"
           "$RUNNER_TEMP/WeakScriptMessageHandlerTests"
+
+      - name: Test native preference save validation
+        run: |
+          swiftc \
+            -swift-version 5 \
+            -target "$(uname -m)-apple-macosx13.0" \
+            -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+            -framework AppKit \
+            Sources/FindexApp/FindexPreferences.swift \
+            Sources/FindexApp/PreferenceSaveMessage.swift \
+            Tests/PreferenceSaveMessageTests.swift \
+            -o "$RUNNER_TEMP/PreferenceSaveMessageTests"
+          "$RUNNER_TEMP/PreferenceSaveMessageTests"
 
       - name: Build macOS application
         run: scripts/build-local.sh

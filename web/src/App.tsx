@@ -29,6 +29,7 @@ import {
   type Arrangement,
   type ViewStyle,
 } from "@/lib/preferences"
+import { normalizePreferencesForSave } from "@/lib/preferenceSave"
 
 export default function App() {
   const [initialPreferences] = useState(loadPreferences)
@@ -41,13 +42,20 @@ export default function App() {
   const dirty = JSON.stringify(savedPreferences) !== JSON.stringify({ terminal, editor, iconSize, arrangement, view })
 
   const save = () => {
-    const clampedIconSize = Math.min(Math.max(iconSize, ICON_SIZE.min), ICON_SIZE.max)
-    setIconSize(clampedIconSize)
-    persistPreferences({ terminal: terminal.trim(), editor: editor.trim(), iconSize: clampedIconSize, arrangement, view })
-    setSavedPreferences({ terminal, editor, iconSize: clampedIconSize, arrangement, view })
-    const viewLabel = VIEWS.find((option) => option.value === view)?.label ?? view
+    const preferences = normalizePreferencesForSave({ terminal, editor, iconSize, arrangement, view }, ICON_SIZE)
+    if (!preferences) {
+      toast.error("Terminal and editor are required")
+      return
+    }
+
+    setTerminal(preferences.terminal)
+    setEditor(preferences.editor)
+    setIconSize(preferences.iconSize)
+    persistPreferences(preferences)
+    setSavedPreferences(preferences)
+    const viewLabel = VIEWS.find((option) => option.value === preferences.view)?.label ?? preferences.view
     toast.success("Preferences saved", {
-      description: `${viewLabel} view · icon size ${clampedIconSize}px`,
+      description: `${viewLabel} view · icon size ${preferences.iconSize}px`,
     })
   }
 

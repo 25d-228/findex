@@ -79,30 +79,17 @@ final class WebPreferencesWindowController: NSWindowController, WKScriptMessageH
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         guard
             message.name == "findex",
-            let body = message.body as? [String: Any],
-            body["type"] as? String == "save"
+            let preferences = PreferenceSaveMessage.parse(message.body)
         else {
             return
         }
 
-        if let terminal = body["terminal"] as? String, !terminal.isEmpty {
-            FindexPreferences.terminalBundleIdentifier = terminal
-        }
-        if let editor = body["editor"] as? String, !editor.isEmpty {
-            FindexPreferences.editorBundleIdentifier = editor
-        }
-        if let iconSize = body["iconSize"] as? Int {
-            FindexPreferences.iconSize = iconSize
-        }
-        if let rawArrangement = body["arrangement"] as? String,
-           let arrangement = FinderArrangement(rawValue: rawArrangement) {
-            FindexPreferences.arrangement = arrangement
-        }
-        if let rawView = body["view"] as? String,
-           let viewStyle = FinderViewStyle(rawValue: rawView) {
-            FindexPreferences.viewStyle = viewStyle
-            viewStyle.applyAsFinderGlobalDefault()
-        }
+        FindexPreferences.terminalBundleIdentifier = preferences.terminalBundleIdentifier
+        FindexPreferences.editorBundleIdentifier = preferences.editorBundleIdentifier
+        FindexPreferences.iconSize = preferences.iconSize
+        FindexPreferences.arrangement = preferences.arrangement
+        FindexPreferences.viewStyle = preferences.viewStyle
+        preferences.viewStyle.applyAsFinderGlobalDefault()
 
         NSLog("Findex saved preferences from web UI")
     }

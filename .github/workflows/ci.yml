@@ -37,6 +37,7 @@ jobs:
             --rootDir . \
             --outDir "$RUNNER_TEMP/PreferenceSaveTests" \
             --skipLibCheck \
+            src/lib/preferenceDefaults.ts \
             src/lib/preferenceSave.ts \
             tests/PreferenceSaveTests.ts
           node "$RUNNER_TEMP/PreferenceSaveTests/tests/PreferenceSaveTests.js"

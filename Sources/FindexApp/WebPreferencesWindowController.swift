@@ -55,22 +55,23 @@ final class WebPreferencesWindowController: NSWindowController, WKScriptMessageH
     }
 
     private static func initialPreferencesScript() -> WKUserScript {
-        let preferences: [String: Any] = [
-            "terminal": FindexPreferences.terminalBundleIdentifier,
-            "editor": FindexPreferences.editorBundleIdentifier,
-            "iconSize": FindexPreferences.iconSize,
-            "arrangement": FindexPreferences.arrangement.rawValue,
-            "view": FindexPreferences.viewStyle.rawValue
+        let bootstrap: [String: Any] = [
+            "preferences": FindexPreferences.currentValues.webValue,
+            "defaults": FindexPreferences.resolvedDefaults.webValue
         ]
 
         var json = "{}"
-        if let data = try? JSONSerialization.data(withJSONObject: preferences),
+        if let data = try? JSONSerialization.data(withJSONObject: bootstrap),
            let encoded = String(data: data, encoding: .utf8) {
             json = encoded
         }
 
         return WKUserScript(
-            source: "window.__FINDEX_PREFS__ = \(json);",
+            source: """
+            const findexBootstrap = \(json);
+            window.__FINDEX_PREFS__ = findexBootstrap.preferences;
+            window.__FINDEX_DEFAULTS__ = findexBootstrap.defaults;
+            """,
             injectionTime: .atDocumentStart,
             forMainFrameOnly: true
         )
@@ -92,5 +93,17 @@ final class WebPreferencesWindowController: NSWindowController, WKScriptMessageH
         preferences.viewStyle.applyAsFinderGlobalDefault()
 
         NSLog("Findex saved preferences from web UI")
+    }
+}
+
+private extension FindexPreferences.Values {
+    var webValue: [String: Any] {
+        [
+            "terminal": terminalBundleIdentifier,
+            "editor": editorBundleIdentifier,
+            "iconSize": iconSize,
+            "arrangement": arrangement.rawValue,
+            "view": viewStyle.rawValue
+        ]
     }
 }

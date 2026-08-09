@@ -1,4 +1,5 @@
 import type { Preferences } from "../src/lib/preferences"
+import { resolvePreferenceDefaults } from "../src/lib/preferenceDefaults"
 import { normalizePreferencesForSave } from "../src/lib/preferenceSave"
 
 const bounds = { min: 16, max: 256 }
@@ -36,6 +37,31 @@ assertEqual(
   normalizePreferencesForSave({ ...candidate, editor: "\t" }, bounds),
   null,
   "rejects a blank editor identifier",
+)
+
+const browserFallback: Preferences = {
+  terminal: "browser.terminal",
+  editor: "browser.editor",
+  iconSize: 64,
+  arrangement: "name",
+  view: "icon",
+}
+const injectedDefaults: Preferences = {
+  terminal: "native.terminal",
+  editor: "native.editor",
+  iconSize: 80,
+  arrangement: "kind",
+  view: "list",
+}
+assertEqual(
+  resolvePreferenceDefaults(injectedDefaults, browserFallback),
+  injectedDefaults,
+  "uses injected native defaults when available",
+)
+assertEqual(
+  resolvePreferenceDefaults(undefined, browserFallback),
+  browserFallback,
+  "uses the browser fallback when native defaults are absent",
 )
 
 console.log("PreferenceSaveTests passed")

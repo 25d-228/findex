@@ -1,3 +1,5 @@
+import { resolvePreferenceDefaults } from "./preferenceDefaults"
+
 export type Arrangement = "name" | "kind" | "modificationDate" | "none"
 export type ViewStyle = "icon" | "list" | "column" | "gallery"
 
@@ -12,7 +14,7 @@ export type Preferences = {
   view: ViewStyle
 }
 
-export const DEFAULTS: Preferences = {
+const BROWSER_DEFAULTS: Preferences = {
   terminal: "net.kovidgoyal.kitty",
   editor: "nvim",
   iconSize: ICON_SIZE.default,
@@ -25,6 +27,7 @@ const STORAGE_KEY = "findex-preferences"
 declare global {
   interface Window {
     __FINDEX_PREFS__?: Partial<Preferences>
+    __FINDEX_DEFAULTS__?: Preferences
     webkit?: {
       messageHandlers?: {
         findex?: { postMessage: (message: unknown) => void }
@@ -32,6 +35,8 @@ declare global {
     }
   }
 }
+
+export const DEFAULTS = resolvePreferenceDefaults(window.__FINDEX_DEFAULTS__, BROWSER_DEFAULTS)
 
 // When embedded in Findex.app, a WKScriptMessageHandler named "findex" is the
 // real persistence layer (UserDefaults). In a plain browser, localStorage is.

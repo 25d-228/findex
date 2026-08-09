@@ -1,6 +1,14 @@
 import AppKit
 
 enum FindexPreferences {
+    struct Values {
+        let terminalBundleIdentifier: String
+        let editorBundleIdentifier: String
+        let iconSize: Int
+        let arrangement: FinderArrangement
+        let viewStyle: FinderViewStyle
+    }
+
     private enum Key {
         static let terminalBundleIdentifier = "terminalBundleIdentifier"
         static let editorBundleIdentifier = "editorBundleIdentifier"
@@ -12,13 +20,40 @@ enum FindexPreferences {
     private enum Default {
         static let terminalBundleIdentifier = "com.apple.Terminal"
         static let editorBundleIdentifier = "com.microsoft.VSCode"
+        static let editorCandidates = [
+            "com.todesktop.230313mzl4w4u92", // Cursor
+            "com.microsoft.VSCode",          // Visual Studio Code
+            "com.apple.dt.Xcode"             // Xcode
+        ]
         static let iconSize = 64
+        static let arrangement = FinderArrangement.name
+        static let viewStyle = FinderViewStyle.icon
     }
 
     /// Finder icon-view sizes Findex is willing to apply, in points.
     private enum IconSizePoints {
         static let minimum = 16
         static let maximum = 256
+    }
+
+    static var resolvedDefaults: Values {
+        Values(
+            terminalBundleIdentifier: Default.terminalBundleIdentifier,
+            editorBundleIdentifier: detectedEditorBundleIdentifier(),
+            iconSize: Default.iconSize,
+            arrangement: Default.arrangement,
+            viewStyle: Default.viewStyle
+        )
+    }
+
+    static var currentValues: Values {
+        Values(
+            terminalBundleIdentifier: terminalBundleIdentifier,
+            editorBundleIdentifier: editorBundleIdentifier,
+            iconSize: iconSize,
+            arrangement: arrangement,
+            viewStyle: viewStyle
+        )
     }
 
     static var terminalBundleIdentifier: String {
@@ -54,8 +89,8 @@ enum FindexPreferences {
 
     static var arrangement: FinderArrangement {
         get {
-            let rawValue = UserDefaults.standard.string(forKey: Key.arrangement) ?? FinderArrangement.name.rawValue
-            return FinderArrangement(rawValue: rawValue) ?? .name
+            let rawValue = UserDefaults.standard.string(forKey: Key.arrangement) ?? Default.arrangement.rawValue
+            return FinderArrangement(rawValue: rawValue) ?? Default.arrangement
         }
         set {
             UserDefaults.standard.set(newValue.rawValue, forKey: Key.arrangement)
@@ -64,8 +99,8 @@ enum FindexPreferences {
 
     static var viewStyle: FinderViewStyle {
         get {
-            let rawValue = UserDefaults.standard.string(forKey: Key.viewStyle) ?? FinderViewStyle.icon.rawValue
-            return FinderViewStyle(rawValue: rawValue) ?? .icon
+            let rawValue = UserDefaults.standard.string(forKey: Key.viewStyle) ?? Default.viewStyle.rawValue
+            return FinderViewStyle(rawValue: rawValue) ?? Default.viewStyle
         }
         set {
             UserDefaults.standard.set(newValue.rawValue, forKey: Key.viewStyle)
@@ -73,13 +108,7 @@ enum FindexPreferences {
     }
 
     private static func detectedEditorBundleIdentifier() -> String {
-        let candidates = [
-            "com.todesktop.230313mzl4w4u92", // Cursor
-            "com.microsoft.VSCode",          // Visual Studio Code
-            "com.apple.dt.Xcode"             // Xcode
-        ]
-
-        for candidate in candidates where AppLocator.hasApplication(bundleIdentifier: candidate) {
+        for candidate in Default.editorCandidates where AppLocator.hasApplication(bundleIdentifier: candidate) {
             return candidate
         }
 

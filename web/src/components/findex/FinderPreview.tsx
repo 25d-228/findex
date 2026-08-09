@@ -1,11 +1,9 @@
 import { useMemo } from "react"
 
 import { ICON_SIZE, type Arrangement, type ViewStyle } from "@/lib/preferences"
+import { orderPreviewItems, type PreviewOrderItem } from "@/lib/previewOrder"
 
-type Item = {
-  name: string
-  kind: "folder" | "image" | "movie" | "text" | "audio"
-  modified: number // epoch days, newest = largest
+type Item = PreviewOrderItem & {
   date: string
 }
 
@@ -20,14 +18,6 @@ const ITEMS: Item[] = [
   { name: "zines", kind: "folder", modified: 152, date: "Jun 1" },
   { name: "scan.png", kind: "image", modified: 45, date: "Feb 14" },
 ]
-
-const KIND_ORDER: Record<Item["kind"], number> = {
-  folder: 0,
-  image: 1,
-  movie: 2,
-  audio: 3,
-  text: 4,
-}
 
 // The miniature shrinks the real icon-size range into this px range.
 const PREVIEW_ICON_PX = { min: 14, max: 58 } as const
@@ -73,24 +63,6 @@ function FileGlyph({ px, kind }: { px: number; kind: Item["kind"] }) {
 
 function Glyph({ item, px }: { item: Item; px: number }) {
   return item.kind === "folder" ? <FolderGlyph px={px} /> : <FileGlyph px={px} kind={item.kind} />
-}
-
-function sortItems(arrangement: Arrangement): Item[] {
-  const sorted = [...ITEMS]
-  switch (arrangement) {
-    case "name":
-      sorted.sort((a, b) => a.name.localeCompare(b.name))
-      break
-    case "kind":
-      sorted.sort((a, b) => KIND_ORDER[a.kind] - KIND_ORDER[b.kind] || a.name.localeCompare(b.name))
-      break
-    case "modificationDate":
-      sorted.sort((a, b) => b.modified - a.modified)
-      break
-    case "none":
-      break
-  }
-  return sorted
 }
 
 function IconGrid({ items, px }: { items: Item[]; px: number }) {
@@ -205,7 +177,7 @@ export function FinderPreview({
   // Map the real icon-size range onto the miniature's px range.
   const sizeFraction = (iconSize - ICON_SIZE.min) / (ICON_SIZE.max - ICON_SIZE.min)
   const px = Math.round(PREVIEW_ICON_PX.min + sizeFraction * (PREVIEW_ICON_PX.max - PREVIEW_ICON_PX.min))
-  const items = useMemo(() => sortItems(arrangement), [arrangement])
+  const items = useMemo(() => orderPreviewItems(ITEMS, arrangement, view), [arrangement, view])
 
   return (
     <div className="rounded-none border-2 border-foreground bg-card pixel-shadow">

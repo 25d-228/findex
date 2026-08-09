@@ -42,6 +42,20 @@ jobs:
             tests/PreferenceSaveTests.ts
           node "$RUNNER_TEMP/PreferenceSaveTests/tests/PreferenceSaveTests.js"
 
+      - name: Test Finder preview ordering
+        working-directory: web
+        run: |
+          ./node_modules/.bin/tsc \
+            --ignoreConfig \
+            --target es2023 \
+            --module commonjs \
+            --rootDir . \
+            --outDir "$RUNNER_TEMP/PreviewOrderTests" \
+            --skipLibCheck \
+            src/lib/previewOrder.ts \
+            tests/PreviewOrderTests.ts
+          node "$RUNNER_TEMP/PreviewOrderTests/tests/PreviewOrderTests.js"
+
       - name: Lint web application
         working-directory: web
         run: npm run lint

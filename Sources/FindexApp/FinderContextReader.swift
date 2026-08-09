@@ -27,15 +27,15 @@ enum FinderContextReader {
                 end repeat
             end try
 
-            set AppleScript's text item delimiters to linefeed
-            set selectedText to selectedPaths as text
-            set AppleScript's text item delimiters to ""
-            return folderPath & "\n---FINDEX-SELECTION---\n" & selectedText
+            return {folderPath, selectedPaths}
         end tell
         """
 
         var error: NSDictionary?
-        guard let result = NSAppleScript(source: script)?.executeAndReturnError(&error).stringValue else {
+        guard
+            let result = NSAppleScript(source: script)?.executeAndReturnError(&error),
+            let context = decode(result)
+        else {
             if let error {
                 NSLog("Findex failed to read Finder context: \(error)")
             }
@@ -43,17 +43,38 @@ enum FinderContextReader {
             return nil
         }
 
-        let marker = "\n---FINDEX-SELECTION---\n"
-        let parts = result.components(separatedBy: marker)
-        let folderPath = parts.first?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let selectedText = parts.count > 1 ? parts[1] : ""
-        let filePaths = selectedText
-            .split(separator: "\n")
-            .map(String.init)
-            .filter { !$0.isEmpty }
+        return context
+    }
+
+    static func decode(_ result: NSAppleEventDescriptor) -> FinderContext? {
+        guard
+            result.descriptorType == typeAEList,
+            result.numberOfItems == 2,
+            let folderDescriptor = result.atIndex(1),
+            folderDescriptor.descriptorType == typeUnicodeText,
+            let folderPath = folderDescriptor.stringValue,
+            let selectionDescriptor = result.atIndex(2),
+            selectionDescriptor.descriptorType == typeAEList
+        else {
+            return nil
+        }
+
+        var filePaths: [String] = []
+        filePaths.reserveCapacity(selectionDescriptor.numberOfItems)
+        for index in 0..<selectionDescriptor.numberOfItems {
+            guard
+                let fileDescriptor = selectionDescriptor.atIndex(index + 1),
+                fileDescriptor.descriptorType == typeUnicodeText,
+                let filePath = fileDescriptor.stringValue,
+                !filePath.isEmpty
+            else {
+                return nil
+            }
+            filePaths.append(filePath)
+        }
 
         return FinderContext(
-            folderPath: folderPath?.isEmpty == false ? folderPath : nil,
+            folderPath: folderPath.isEmpty ? nil : folderPath,
             filePaths: filePaths
         )
     }

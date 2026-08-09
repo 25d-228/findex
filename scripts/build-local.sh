@@ -70,6 +70,7 @@ swiftc \
   "$ROOT/Sources/FindexApp/FinderContextReader.swift" \
   "$ROOT/Sources/FindexApp/FindexServicesProvider.swift" \
   "$ROOT/Sources/FindexApp/CommandRunner.swift" \
+  "$ROOT/Sources/FindexApp/CommandURLLaunchHandler.swift" \
   "$ROOT/Sources/FindexApp/FindexPreferences.swift" \
   "$ROOT/Sources/FindexApp/PreferenceSaveMessage.swift" \
   "$ROOT/Sources/FindexApp/FinderViewPresetScript.swift" \

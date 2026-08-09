@@ -5,12 +5,18 @@ final class FindexApp: NSObject, NSApplicationDelegate {
     static var retainedDelegate: FindexApp?
 
     private let commandRunner = CommandRunner()
+    private lazy var commandURLLaunchHandler = CommandURLLaunchHandler { [commandRunner] url in
+        commandRunner.run(url: url)
+    }
     private lazy var servicesProvider = FindexServicesProvider(commandRunner: commandRunner)
     private var preferencesWindowController: WebPreferencesWindowController?
     private var statusItem: NSStatusItem?
 
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        commandURLLaunchHandler.install()
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
-        installURLHandler()
         installServices()
         installStatusItem()
         installMainMenu()
@@ -61,15 +67,6 @@ final class FindexApp: NSObject, NSApplicationDelegate {
         return item
     }
 
-    private func installURLHandler() {
-        NSAppleEventManager.shared().setEventHandler(
-            self,
-            andSelector: #selector(handleURLEvent(_:withReplyEvent:)),
-            forEventClass: AEEventClass(kInternetEventClass),
-            andEventID: AEEventID(kAEGetURL)
-        )
-    }
-
     private func installServices() {
         NSApp.servicesProvider = servicesProvider
         NSUpdateDynamicServices()
@@ -104,17 +101,6 @@ final class FindexApp: NSObject, NSApplicationDelegate {
         item.menu = menu
 
         statusItem = item
-    }
-
-    @objc private func handleURLEvent(_ event: NSAppleEventDescriptor, withReplyEvent replyEvent: NSAppleEventDescriptor) {
-        guard
-            let rawURL = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
-            let url = URL(string: rawURL)
-        else {
-            return
-        }
-
-        commandRunner.run(url: url)
     }
 
     @objc private func copyFilePath() {

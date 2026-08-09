@@ -77,6 +77,18 @@ jobs:
             -o "$RUNNER_TEMP/FinderViewPresetScriptTests"
           "$RUNNER_TEMP/FinderViewPresetScriptTests"
 
+      - name: Test Finder context descriptor decoding
+        run: |
+          swiftc \
+            -swift-version 5 \
+            -target "$(uname -m)-apple-macosx13.0" \
+            -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+            -framework AppKit \
+            Sources/FindexApp/FinderContextReader.swift \
+            Tests/FinderContextReaderTests.swift \
+            -o "$RUNNER_TEMP/FinderContextReaderTests"
+          "$RUNNER_TEMP/FinderContextReaderTests"
+
       - name: Test web preferences bridge ownership
         run: |
           swiftc \

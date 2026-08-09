@@ -89,6 +89,19 @@ jobs:
             -o "$RUNNER_TEMP/FinderContextReaderTests"
           "$RUNNER_TEMP/FinderContextReaderTests"
 
+      - name: Test launch-time command URL handling
+        run: |
+          swiftc \
+            -swift-version 5 \
+            -target "$(uname -m)-apple-macosx13.0" \
+            -sdk "$(xcrun --sdk macosx --show-sdk-path)" \
+            -framework AppKit \
+            Sources/FindexShared/FindexCommand.swift \
+            Sources/FindexApp/CommandURLLaunchHandler.swift \
+            Tests/CommandURLLaunchHandlerTests.swift \
+            -o "$RUNNER_TEMP/CommandURLLaunchHandlerTests"
+          "$RUNNER_TEMP/CommandURLLaunchHandlerTests"
+
       - name: Test web preferences bridge ownership
         run: |
           swiftc \

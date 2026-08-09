@@ -34,6 +34,14 @@ mkdir -p "$APP_MACOS" "$APP_RESOURCES" "$APP_PLUGINS" "$EXT_MACOS" "$EXT_RESOURC
 
 cp "$ROOT/Resources/App/Info.plist" "$APP_CONTENTS/Info.plist"
 cp "$ROOT/Resources/FinderExtension/Info.plist" "$EXT_CONTENTS/Info.plist"
+
+if [ -n "${FINDEX_RELEASE_VERSION:-}" ]; then
+  for plist in "$APP_CONTENTS/Info.plist" "$EXT_CONTENTS/Info.plist"; do
+    plutil -replace CFBundleShortVersionString -string "$FINDEX_RELEASE_VERSION" "$plist"
+    plutil -replace CFBundleVersion -string "$FINDEX_RELEASE_VERSION" "$plist"
+  done
+fi
+
 cp "$ROOT/Resources/App/FindexIcon.icns" "$APP_RESOURCES/FindexIcon.icns"
 cp "$ROOT/Resources/App/FindexIcon.icns" "$EXT_RESOURCES/FindexIcon.icns"
 

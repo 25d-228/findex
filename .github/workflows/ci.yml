@@ -90,3 +90,6 @@ jobs:
 
       - name: Build macOS application
         run: scripts/build-local.sh
+
+      - name: Test release archive metadata
+        run: Tests/PackageReleaseTests.sh
